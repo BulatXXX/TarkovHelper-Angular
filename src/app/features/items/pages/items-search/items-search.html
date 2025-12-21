@@ -1,0 +1,55 @@
+<div class="page">
+  <header class="header">
+    <h1 class="title">Items search</h1>
+    <p class="subtitle muted">Type at least 2 characters to search</p>
+  </header>
+
+  <div class="search">
+    <input
+      class="input"
+      type="text"
+      [formControl]="query"
+      placeholder="e.g. lab, salewa, ai-2..."
+      autocomplete="off"
+    />
+  </div>
+
+  @if (viewModel$ | async; as vm) {
+    @if (vm.state === 'idle') {
+      <div class="hint muted">Start typing to see results…</div>
+    }
+
+    @if (vm.state === 'loading') {
+      <div class="hint muted">Loading…</div>
+    }
+
+    @if (vm.state === 'error') {
+      <div class="error">
+        <div class="error-title">Request failed</div>
+        <div class="error-text">{{ vm.message }}</div>
+      </div>
+    }
+
+    @if (vm.state === 'ready') {
+      @if (vm.items.length === 0) {
+        <div class="hint muted">Nothing found</div>
+      } @else {
+        <div class="list">
+          @for (it of vm.items; track it.id) {
+            <a class="row" [routerLink]="['/items', it.id]">
+              <img
+                class="icon"
+                [ngSrc]="it.iconLink ?? placeholder"
+                width="40"
+                height="40"
+                alt=""
+              />
+              <div class="name">{{ it.name }}</div>
+              <div class="chev" aria-hidden="true">›</div>
+            </a>
+          }
+        </div>
+      }
+    }
+  }
+</div>

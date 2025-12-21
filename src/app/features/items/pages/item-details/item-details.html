@@ -1,0 +1,44 @@
+<div class="page">
+  <a class="back" routerLink="/items">← back</a>
+
+  @if (viewModel$ | async; as vm) {
+    @if (vm.state === 'ready') {
+      <div class="card">
+        <div class="top">
+          <img
+            class="icon"
+            [ngSrc]="vm.item.image512pxLink ?? vm.item.iconLink ?? placeholder"
+            width="128"
+            height="128"
+            [alt]="vm.item.name"
+          />
+
+          <div class="titles">
+            <h1 class="name">{{ vm.item.name }}</h1>
+            <div class="id">ID: {{ vm.item.id }}</div>
+
+            @if (vm.item.avg24hPrice !== null) {
+              <div class="price">Avg 24h price: <b>{{ vm.item.avg24hPrice }}</b></div>
+            }
+          </div>
+        </div>
+
+        @if (vm.item.description) {
+          <p class="desc">{{ vm.item.description }}</p>
+        }
+
+        <div class="meta">
+          @if (vm.item.width !== null && vm.item.height !== null) {
+            <span class="pill">Size: {{ vm.item.width }}×{{ vm.item.height }}</span>
+          }
+        </div>
+      </div>
+    } @else if(vm.state=="error") {
+      <div class="error">
+        <h2>Item not found</h2>
+        <p class="muted">Unknown id: <span class="mono">{{ vm.id }}</span></p>
+        <p class="muted">{{ vm.message }}</p>
+      </div>
+    }
+  }
+</div>

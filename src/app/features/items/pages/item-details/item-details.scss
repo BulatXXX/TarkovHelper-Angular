@@ -1,0 +1,82 @@
+.page {
+  padding: 16px;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.back {
+  display: inline-block;
+  margin-bottom: 12px;
+  text-decoration: none;
+  opacity: 0.85;
+}
+
+.card {
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 16px;
+  padding: 16px;
+  background: rgba(255,255,255,0.04);
+}
+
+.top {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.icon {
+  border-radius: 14px;
+  background: rgba(0,0,0,0.25);
+  padding: 8px;
+  object-fit: contain;
+}
+
+.name {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.2;
+}
+
+.id {
+  margin-top: 6px;
+  opacity: 0.65;
+  font-size: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono";
+}
+
+.price {
+  margin-top: 10px;
+  opacity: 0.9;
+}
+
+.desc {
+  margin-top: 14px;
+  line-height: 1.5;
+  opacity: 0.95;
+}
+
+.meta {
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+}
+
+.pill {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.03);
+  opacity: 0.85;
+}
+
+.error {
+  border: 1px solid rgba(255, 80, 80, 0.42);
+  background: rgba(255, 80, 80, 0.08);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.muted { opacity: 0.75; }
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono";
+}
