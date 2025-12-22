@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
-import {ItemPreview} from '../../features/items/models/item';
+import {ItemPreview} from '../models/item';
 
 export type HistoryEntry = ItemPreview & { visitedAt: number };
 

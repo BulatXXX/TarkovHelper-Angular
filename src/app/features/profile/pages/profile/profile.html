@@ -1,0 +1,30 @@
+<div class="page">
+  <header class="header">
+    <h1 class="title">Profile</h1>
+    <p class="subtitle muted">Tracked items (local)</p>
+  </header>
+
+  @if (isEmpty()) {
+    <div class="empty muted">
+      No tracked items yet. Open item details and press “Track”.
+    </div>
+    <a class="btn" routerLink="/items">Go to search</a>
+  } @else {
+    <div class="list">
+      @for (it of tracked(); track it.id) {
+        <a class="row" [routerLink]="['/items', it.id]">
+          <img class="icon" [src]="it.iconLink" width="40" height="40" alt="" />
+
+          <div class="main">
+            <div class="name">{{ it.name }}</div>
+            <div class="id muted">{{ it.avg24hPrice }}</div>
+          </div>
+
+          <div class="chev" aria-hidden="true">›</div>
+        </a>
+      }
+    </div>
+  }
+</div>
+
+

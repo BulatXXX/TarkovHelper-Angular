@@ -1,11 +1,11 @@
-import { DestroyRef, Injectable, inject } from '@angular/core';
-import { BehaviorSubject, of } from 'rxjs';
-import { catchError, debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {DestroyRef, inject, Injectable} from '@angular/core';
+import {BehaviorSubject, of} from 'rxjs';
+import {catchError, debounceTime, distinctUntilChanged, map, startWith, switchMap} from 'rxjs/operators';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
-import { ItemApiService } from '../../../../core/services/item-api.service';
-import { ItemPreview } from '../../models/item';
-import { ItemsHistoryService } from '../../../../core/services/items-history';
+import {ItemApiService} from '../../../../core/services/item-api.service';
+import {ItemPreview} from '../../../../core/models/item';
+import {ItemsHistoryService} from '../../../../core/services/items-history';
 
 type GameMode = 'pve' | 'regular';
 

@@ -1,12 +1,12 @@
-import { DestroyRef, Injectable, inject } from '@angular/core';
-import { BehaviorSubject, of } from 'rxjs';
-import { catchError, debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {DestroyRef, inject, Injectable} from '@angular/core';
+import {BehaviorSubject, of} from 'rxjs';
+import {catchError, debounceTime, distinctUntilChanged, map, startWith, switchMap} from 'rxjs/operators';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
-import { ItemApiService } from '../../../../core/services/item-api.service';
-import { ItemsHistoryService } from '../../../../core/services/items-history';
-import { TrackedItemsService } from '../../../../core/services/items-tracked';
-import { ItemDetails, ItemPreview } from '../../models/item';
+import {ItemApiService} from '../../../../core/services/item-api.service';
+import {ItemsHistoryService} from '../../../../core/services/items-history';
+import {TrackedItemsService} from '../../../../core/services/items-tracked';
+import {ItemDetails, ItemPreview} from '../../../../core/models/item';
 
 type GameMode = 'pve' | 'regular';
 type Status = 'idle' | 'loading' | 'ready' | 'error';
@@ -124,10 +124,15 @@ export class ItemDetailsViewModel {
     const s = this.snapshot;
     if (s.status !== 'ready' || !s.item) return;
 
-    const preview: ItemPreview = { id: s.item.id, name: s.item.name, iconLink: s.item.iconLink };
-    this.trackedService.toggle(preview);
+    this.trackedService.toggle({
+      id: s.item.id,
+      name: s.item.name,
+      avg24hPrice: s.item.avg24hPrice,
+      iconLink: s.item.iconLink ?? null,
+      addedAt: 0,
+    });
 
-    this.patch({ tracked: this.trackedService.isTracked(preview.id) });
+    this.patch({ tracked: this.trackedService.isTracked(s.item.id) });
   }
 
   private patch(patch: Partial<DetailsUiState>) {

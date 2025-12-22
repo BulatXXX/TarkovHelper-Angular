@@ -1,8 +1,8 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
-import {ItemDetails, ItemPreview} from '../../features/items/models/item';
+import {inject, Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {map} from 'rxjs/operators';
+import {Observable} from 'rxjs';
+import {ItemDetails, ItemPreview} from '../models/item';
 
 type GqlResp<T> = { data?: T; errors?: Array<{ message: string }> };
 

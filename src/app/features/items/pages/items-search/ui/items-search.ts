@@ -1,19 +1,9 @@
 import {Component, DestroyRef, ElementRef, inject} from '@angular/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { catchError, debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
-import { of } from 'rxjs';
-import { ItemApiService } from '../../../../../core/services/item-api.service';
-import { ItemPreview } from '../../../models/item';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
+import {RouterModule} from '@angular/router';
+import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {ItemSearchViewModel} from '../item-search-view-model';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-
-type ViewModel =
-  | { state: 'idle'; items: ItemPreview[] }
-  | { state: 'loading'; items: ItemPreview[] }
-  | { state: 'ready'; items: ItemPreview[] }
-  | { state: 'error'; items: ItemPreview[]; message: string };
 
 @Component({
   standalone: true,
