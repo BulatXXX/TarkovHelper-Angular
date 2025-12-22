@@ -1,0 +1,52 @@
+<div class="page">
+  <a class="back" routerLink="/items">← back</a>
+
+  @if (state$ | async; as s) {
+    @if (s.status === 'loading') {
+      <div class="hint muted">Loading…</div>
+    }
+
+    @if (s.status === 'ready' && s.item) {
+      <div class="card">
+        <div class="top">
+          <img
+            class="icon"
+            [ngSrc]="s.item.image512pxLink ?? s.item.iconLink ?? placeholder"
+            width="128"
+            height="128"
+            [alt]="s.item.name"
+          />
+
+          <div class="titles">
+            <h1 class="name">{{ s.item.name }}</h1>
+            <div class="id">ID: {{ s.item.id }}</div>
+
+            @if (s.item.avg24hPrice !== null) {
+              <div class="price">Avg 24h price: <b>{{ s.item.avg24hPrice }}</b></div>
+            }
+
+            <button class="track" type="button" (click)="toggleTracked()">
+              {{ s.tracked ? 'Untrack' : 'Track' }}
+            </button>
+          </div>
+        </div>
+
+        @if (s.item.description) {
+          <p class="desc">{{ s.item.description }}</p>
+        }
+
+        <div class="meta">
+          @if (s.item.width !== null && s.item.height !== null) {
+            <span class="pill">Size: {{ s.item.width }}×{{ s.item.height }}</span>
+          }
+        </div>
+      </div>
+    } @else if (s.status === 'error') {
+      <div class="error">
+        <h2>Item not found</h2>
+        <p class="muted">Unknown id: <span class="mono">{{ s.id ?? '—' }}</span></p>
+        <p class="muted">{{ s.errorMessage }}</p>
+      </div>
+    }
+  }
+</div>

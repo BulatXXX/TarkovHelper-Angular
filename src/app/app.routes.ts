@@ -4,10 +4,10 @@ export const routes: Routes = [
   {
     path: 'items/:id',
     loadComponent: () =>
-      import('./features/items/pages/item-details/item-details').then(m => m.ItemDetailsPage),
+      import('./features/items/pages/item-details/ui/item-details').then(m => m.ItemDetailsPage),
   },
   {
     path: 'items',
-    loadComponent:()=>import('./features/items/pages/items-search/items-search').then(m => m.ItemsSearch)
+    loadComponent:()=>import('./features/items/pages/items-search/ui/items-search').then(m => m.ItemsSearch)
   }
 ];

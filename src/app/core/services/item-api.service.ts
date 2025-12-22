@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import {ItemDetails, ItemPreview} from '../models/item';
+import {ItemDetails, ItemPreview} from '../../features/items/models/item';
 
 type GqlResp<T> = { data?: T; errors?: Array<{ message: string }> };
 
@@ -31,7 +31,7 @@ query getItemById($id: ID!, $lang: LanguageCode!, $gamemode: GameMode) {
 }
 `;
 @Injectable({ providedIn: 'root' })
-export class ItemService {
+export class ItemApiService {
   private http = inject(HttpClient);
   private endpoint = 'https://api.tarkov.dev/graphql';
 
@@ -48,7 +48,7 @@ export class ItemService {
         })
       );
   }
-  getItemById(params: { id: string; lang: 'en' | 'ru'; gamemode?: 'pve' | 'pvp' }): Observable<ItemDetails> {
+  getItemById(params: { id: string; lang: 'en' | 'ru'; gamemode?: 'pve' | 'regular' }): Observable<ItemDetails> {
     return this.http
       .post<GqlResp<{ item: ItemDetails | null }>>(this.endpoint, {
         query: GET_ITEM_BY_ID,
