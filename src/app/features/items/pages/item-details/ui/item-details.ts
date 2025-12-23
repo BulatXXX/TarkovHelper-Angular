@@ -1,15 +1,14 @@
-import { Component, DestroyRef, inject } from '@angular/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
-import { map } from 'rxjs/operators';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {Component, DestroyRef, inject} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {ActivatedRoute, RouterModule} from '@angular/router';
+import {map} from 'rxjs/operators';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {ItemDetailsViewModel} from '../item-details-view-model';
-
 
 
 @Component({
   standalone: true,
-  imports: [CommonModule, RouterModule, NgOptimizedImage],
+  imports: [CommonModule, RouterModule],
   templateUrl: './item-details.html',
   styleUrl: './item-details.scss',
 })
