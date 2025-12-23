@@ -1,5 +1,10 @@
 <div class="page">
-  <a class="back" routerLink="/items">← back</a>
+  <div class="toolbar">
+    <a class="back" routerLink="/items">
+      <span class="back-ico" aria-hidden="true">←</span>
+      <span>Back</span>
+    </a>
+  </div>
 
   @if (state$ | async; as s) {
     @if (s.status === 'loading') {
@@ -18,16 +23,25 @@
           />
 
           <div class="titles">
-            <h1 class="name">{{ s.item.name }}</h1>
+            <div class="title-row">
+              <h1 class="name">{{ s.item.name }}</h1>
+
+              <button
+                class="track"
+                type="button"
+                (click)="toggleTracked()"
+                [attr.aria-pressed]="s.tracked"
+              >
+                <span class="star" [class.on]="s.tracked" aria-hidden="true">★</span>
+                <span class="track-text">{{ s.tracked ? 'Tracked' : 'Track' }}</span>
+              </button>
+            </div>
+
             <div class="id">ID: {{ s.item.id }}</div>
 
             @if (s.item.avg24hPrice !== null) {
               <div class="price">Avg 24h price: <b>{{ s.item.avg24hPrice }}</b></div>
             }
-
-            <button class="track" type="button" (click)="toggleTracked()">
-              {{ s.tracked ? 'Untrack' : 'Track' }}
-            </button>
           </div>
         </div>
 
