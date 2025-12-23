@@ -13,8 +13,6 @@
         placeholder="e.g. lab, salewa, ai-2..."
         autocomplete="off"
       />
-
-      <!-- History popover (no focus TS): visible only while focus is inside search-box -->
       @if (history$ | async; as history) {
         @if (isQueryEmpty && history.length > 0) {
           <div class="history-popover">
@@ -48,7 +46,16 @@
     }
 
     @if (vm.status === 'loading') {
-      <div class="hint muted">Loading…</div>
+      <!-- Shimmer list (same shape as rows) -->
+      <div class="list skeleton-list" aria-hidden="true">
+        @for (_ of [1,2,3,4,5,6]; track _) {
+          <div class="row row-skel">
+            <div class="icon skel skel-icon"></div>
+            <div class="name skel skel-text"></div>
+            <div class="chev skel skel-chev"></div>
+          </div>
+        }
+      </div>
     }
 
     @if (vm.status === 'error') {

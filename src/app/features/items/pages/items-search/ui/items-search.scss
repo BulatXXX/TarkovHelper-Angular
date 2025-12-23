@@ -3,6 +3,7 @@
   max-width: 980px;
   margin: 0 auto;
   padding: 16px;
+  box-sizing: border-box;
 }
 
 .header { margin-bottom: 12px; }
@@ -51,7 +52,7 @@
   left: 0;
   right: 0;
 
-  top: calc(100% + 10px); /* от низа инпута */
+  top: calc(100% + 10px);
   z-index: 20;
 
   opacity: 0;
@@ -89,6 +90,7 @@
   background: rgba(255, 255, 255, 0.03);
 
   transition: 120ms ease;
+  box-sizing: border-box;
 }
 
 .row:hover {
@@ -219,6 +221,68 @@
   font-size: 22px;
 }
 
+/* ========== Shimmer (for loading list) ========== */
+.skeleton-list { margin-top: 10px; }
+
+.row-skel {
+  pointer-events: none;
+}
+
+.row-skel:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* base skeleton */
+.skel {
+  position: relative;
+  display: block;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  overflow: hidden;
+}
+
+.skel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(
+      90deg,
+      rgba(255,255,255,0.00),
+      rgba(255,255,255,0.12),
+      rgba(255,255,255,0.00)
+  );
+  animation: shimmer 1.2s infinite;
+}
+
+@keyframes shimmer {
+  0%   { transform: translateX(-120%); }
+  100% { transform: translateX(120%); }
+}
+
+/* sizes inside row */
+.skel-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.25); /* как у реальной иконки */
+  border-color: rgba(255,255,255,0.08);
+}
+
+.skel-text {
+  height: 16px;
+  width: clamp(180px, 55%, 300px);
+  border-radius: 300px;
+}
+
+.skel-chev {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  opacity: 0.5;
+}
+
 /* ========== States ========== */
 .hint { margin-top: 8px; }
 
@@ -243,6 +307,7 @@
 @media (max-width: 599px) {
   .title { font-size: 22px; }
   .row, .history-row { padding: 10px; }
+  .page { padding: 14px; }
 }
 
 @media (min-width: 600px) and (max-width: 1023px) {
