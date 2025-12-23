@@ -4,7 +4,7 @@
     <p class="subtitle muted">Type at least 2 characters to search</p>
   </header>
 
-  <div class="search-box" (focusin)="onFocusIn()" (focusout)="onFocusOut($event)">
+  <div class="search-box">
     <div class="search">
       <input
         class="input"
@@ -15,30 +15,29 @@
       />
     </div>
 
-    @if (viewModel$ | async; as s) {
-      @if (s.showHistory && s.query.trim().length === 0) {
-        @if (history$ | async; as history) {
-          @if (history.length > 0) {
-            <div class="history">
-              <div class="history-head">
-                <div class="history-title">Recently viewed</div>
-                <button class="history-clear" type="button" (click)="clearHistory()">
-                  Clear
-                </button>
-              </div>
-
-              <div class="history-list">
-                @for (h of history; track h.id) {
-                  <a class="history-row" [routerLink]="['/items', h.id]">
-                    <img class="icon" [ngSrc]="h.iconLink ?? placeholder" width="32" height="32" alt="" />
-                    <div class="name">{{ h.name }}</div>
-                    <div class="chev" aria-hidden="true">›</div>
-                  </a>
-                }
-              </div>
+    <!-- История: без TS. Рендерим только если query пустая, а показ/скрытие делаем CSS :focus-within -->
+    @if (history$ | async; as history) {
+      @if (isQueryEmpty) {
+        <div class="history-popover">
+          <div class="history">
+            <div class="history-head">
+              <div class="history-title">Recently viewed</div>
+              <button class="history-clear" type="button" (click)="clearHistory()">
+                Clear
+              </button>
             </div>
-          }
-        }
+
+            <div class="history-list">
+              @for (h of history; track h.id) {
+                <a class="history-row" [routerLink]="['/items', h.id]">
+                  <img class="icon" [src]="h.iconLink || placeholder" width="32" height="32" alt="" />
+                  <div class="name">{{ h.name }}</div>
+                  <div class="chev" aria-hidden="true">›</div>
+                </a>
+              }
+            </div>
+          </div>
+        </div>
       }
     }
   </div>
@@ -66,13 +65,7 @@
         <div class="list">
           @for (it of vm.items; track it.id) {
             <a class="row" [routerLink]="['/items', it.id]">
-              <img
-                class="icon"
-                [ngSrc]="it.iconLink ?? placeholder"
-                width="40"
-                height="40"
-                alt=""
-              />
+              <img class="icon" [src]="it.iconLink || placeholder" width="40" height="40" alt="" />
               <div class="name">{{ it.name }}</div>
               <div class="chev" aria-hidden="true">›</div>
             </a>

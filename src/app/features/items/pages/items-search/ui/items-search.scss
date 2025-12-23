@@ -1,12 +1,11 @@
+/* ========== Layout ========== */
 .page {
-  padding: 16px;
   max-width: 980px;
   margin: 0 auto;
+  padding: 16px;
 }
 
-.header {
-  margin-bottom: 12px;
-}
+.header { margin-bottom: 12px; }
 
 .title {
   margin: 0;
@@ -14,13 +13,15 @@
   line-height: 1.2;
 }
 
-.subtitle {
-  margin: 6px 0 0;
+.subtitle { margin: 6px 0 0; }
+
+/* ========== Search + popover ========== */
+.search-box {
+  position: relative;
+  border-radius: 16px;
 }
 
-.search {
-  margin: 14px 0 16px;
-}
+.search { margin: 14px 0 16px; }
 
 .input {
   width: 100%;
@@ -32,23 +33,52 @@
   outline: none;
 }
 
-.input:focus {
+.search-box:focus-within .input {
   border-color: rgba(255, 255, 255, 0.28);
   background: rgba(255, 255, 255, 0.06);
 }
 
-.hint {
-  margin-top: 8px;
+/* popover: виден только пока фокус внутри search-box */
+.history-popover {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% - 6px);
+  z-index: 20;
+
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition: 120ms ease;
+}
+
+.search-box:focus-within .history-popover {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* ========== Common row styles (results + history) ========== */
+.list,
+.history-list {
+  display: flex;
+  flex-direction: column;
 }
 
 .list {
-  display: flex;
-  flex-direction: column;
   gap: 10px;
   margin-top: 10px;
 }
 
-.row {
+.history-list {
+  gap: 8px;
+  max-height: 280px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.row,
+.history-row {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -60,27 +90,38 @@
   color: inherit;
 
   border: 1px solid rgba(255, 255, 255, 0.10);
-  background: rgba(255, 255, 255, 0.03);
 }
 
-.row:hover {
-  background: rgba(255, 255, 255, 0.06);
-}
+/* results */
+.row { background: rgba(255, 255, 255, 0.03); }
+.row:hover { background: rgba(255, 255, 255, 0.06); }
 
+/* history */
+.history-row { background: rgba(0, 0, 0, 0.18); }
+.history-row:hover { background: rgba(120, 120, 120, 0.22); } /* серый hover */
+
+/* shared elements inside rows */
 .icon {
-  width: 40px;
-  height: 40px;
   border-radius: 10px;
   padding: 4px;
-
   background: rgba(0, 0, 0, 0.25);
   object-fit: contain;
 }
 
+.row .icon { width: 40px; height: 40px; }
+.history-row .icon { width: 32px; height: 32px; }
+
 .name {
-  font-weight: 600;
   flex: 1;
   min-width: 0;
+  font-weight: 600;
+}
+
+.history-row .name {
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .chev {
@@ -88,6 +129,155 @@
   font-size: 22px;
   line-height: 1;
 }
+
+/* ========== History popover + panel (dark) ========== */
+
+/* popover: виден только пока фокус внутри search-box */
+.history-popover {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% - 6px);
+  z-index: 20;
+
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition: 140ms ease;
+}
+
+.search-box:focus-within .history-popover {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* контейнер истории */
+.history {
+  padding: 12px;
+  border-radius: 16px;
+
+  /* стекло/тёмная карточка */
+  background: rgba(10, 12, 16, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
+
+  backdrop-filter: blur(10px);
+}
+
+/* header истории */
+.history-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.history-title {
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  /* чуть подсветим заголовок */
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* кнопка Clear */
+.history-clear {
+  padding: 6px 10px;
+  border-radius: 10px;
+
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.88);
+  cursor: pointer;
+
+  transition: 120ms ease;
+}
+
+.history-clear:hover {
+  background: rgba(255, 255, 255, 0.10);
+  border-color: rgba(255, 255, 255, 0.20);
+}
+
+/* список истории */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  max-height: 280px;
+  overflow: auto;
+  padding-right: 6px;
+}
+
+/* скроллбар (приятный) */
+.history-list::-webkit-scrollbar { width: 8px; }
+.history-list::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.14);
+  border-radius: 8px;
+}
+.history-list::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.20);
+  border-radius: 8px;
+}
+
+/* строка истории */
+.history-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 10px 12px;
+  border-radius: 14px;
+
+  text-decoration: none;
+  color: inherit;
+
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.04);
+
+  transition: 120ms ease;
+}
+
+/* hover: серый, не белый */
+.history-row:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+/* иконка */
+.history-row .icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  padding: 4px;
+
+  background: rgba(0, 0, 0, 0.25);
+  object-fit: contain;
+}
+
+/* имя */
+.history-row .name {
+  flex: 1;
+  min-width: 0;
+
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* стрелка */
+.history-row .chev {
+  opacity: 0.55;
+  font-size: 22px;
+  line-height: 1;
+}
+
+/* ========== States ========== */
+.hint { margin-top: 8px; }
 
 .error {
   margin-top: 10px;
@@ -97,24 +287,19 @@
   background: rgba(255, 80, 80, 0.08);
 }
 
-.error-title {
-  font-weight: 700;
-  margin-bottom: 4px;
-}
+.error-title { font-weight: 700; margin-bottom: 4px; }
 
 .error-text {
   opacity: 0.85;
   word-break: break-word;
 }
 
-.muted {
-  opacity: 0.75;
-}
+.muted { opacity: 0.75; }
 
-/* Адаптив под 3 класса размеров */
+/* ========== Responsive (3 breakpoints) ========== */
 @media (max-width: 599px) {
   .title { font-size: 22px; }
-  .row { padding: 10px; }
+  .row, .history-row { padding: 10px; }
 }
 
 @media (min-width: 600px) and (max-width: 1023px) {
