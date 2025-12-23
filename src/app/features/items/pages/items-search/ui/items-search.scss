@@ -21,15 +21,22 @@
   border-radius: 16px;
 }
 
-.search { margin: 14px 0 16px; }
+/* якорь для popover — чтобы НЕ "скукоживалось" */
+.search {
+  position: relative;
+  margin: 14px 0 16px;
+}
 
 .input {
   width: 100%;
   padding: 12px 14px;
   border-radius: 14px;
+
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(255, 255, 255, 0.04);
   color: inherit;
+
+  box-sizing: border-box;
   outline: none;
 }
 
@@ -43,13 +50,14 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: calc(100% - 6px);
+
+  top: calc(100% + 10px); /* от низа инпута */
   z-index: 20;
 
   opacity: 0;
-  transform: translateY(-4px);
+  transform: translateY(-6px);
   pointer-events: none;
-  transition: 120ms ease;
+  transition: 140ms ease;
 }
 
 .search-box:focus-within .history-popover {
@@ -58,27 +66,15 @@
   pointer-events: auto;
 }
 
-/* ========== Common row styles (results + history) ========== */
-.list,
-.history-list {
+/* ========== Results list ========== */
+.list {
   display: flex;
   flex-direction: column;
-}
-
-.list {
   gap: 10px;
   margin-top: 10px;
 }
 
-.history-list {
-  gap: 8px;
-  max-height: 280px;
-  overflow: auto;
-  padding-right: 4px;
-}
-
-.row,
-.history-row {
+.row {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -90,17 +86,16 @@
   color: inherit;
 
   border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.03);
+
+  transition: 120ms ease;
 }
 
-/* results */
-.row { background: rgba(255, 255, 255, 0.03); }
-.row:hover { background: rgba(255, 255, 255, 0.06); }
+.row:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
 
-/* history */
-.history-row { background: rgba(0, 0, 0, 0.18); }
-.history-row:hover { background: rgba(120, 120, 120, 0.22); } /* серый hover */
-
-/* shared elements inside rows */
+/* ========== Shared row elements ========== */
 .icon {
   border-radius: 10px;
   padding: 4px;
@@ -109,19 +104,11 @@
 }
 
 .row .icon { width: 40px; height: 40px; }
-.history-row .icon { width: 32px; height: 32px; }
 
 .name {
   flex: 1;
   min-width: 0;
   font-weight: 600;
-}
-
-.history-row .name {
-  font-weight: 700;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .chev {
@@ -130,42 +117,17 @@
   line-height: 1;
 }
 
-/* ========== History popover + panel (dark) ========== */
-
-/* popover: виден только пока фокус внутри search-box */
-.history-popover {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(100% - 6px);
-  z-index: 20;
-
-  opacity: 0;
-  transform: translateY(-4px);
-  pointer-events: none;
-  transition: 140ms ease;
-}
-
-.search-box:focus-within .history-popover {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-}
-
-/* контейнер истории */
+/* ========== History panel (dark glass) ========== */
 .history {
   padding: 12px;
   border-radius: 16px;
 
-  /* стекло/тёмная карточка */
   background: rgba(10, 12, 16, 0.88);
   border: 1px solid rgba(255, 255, 255, 0.10);
   box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
-
   backdrop-filter: blur(10px);
 }
 
-/* header истории */
 .history-head {
   display: flex;
   align-items: center;
@@ -177,11 +139,9 @@
 .history-title {
   font-weight: 800;
   letter-spacing: 0.6px;
-  /* чуть подсветим заголовок */
   color: rgba(255, 255, 255, 0.92);
 }
 
-/* кнопка Clear */
 .history-clear {
   padding: 6px 10px;
   border-radius: 10px;
@@ -199,7 +159,6 @@
   border-color: rgba(255, 255, 255, 0.20);
 }
 
-/* список истории */
 .history-list {
   display: flex;
   flex-direction: column;
@@ -210,18 +169,17 @@
   padding-right: 6px;
 }
 
-/* скроллбар (приятный) */
+/* приятный скроллбар */
 .history-list::-webkit-scrollbar { width: 8px; }
 .history-list::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.14);
+  background: rgba(255, 255, 255, 0.14);
   border-radius: 8px;
 }
 .history-list::-webkit-scrollbar-track {
-  background: rgba(0,0,0,0.20);
+  background: rgba(0, 0, 0, 0.20);
   border-radius: 8px;
 }
 
-/* строка истории */
 .history-row {
   display: flex;
   align-items: center;
@@ -239,41 +197,26 @@
   transition: 120ms ease;
 }
 
-/* hover: серый, не белый */
+/* hover: серый */
 .history-row:hover {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.16);
 }
 
-/* иконка */
-.history-row .icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-  padding: 4px;
+.history-row .icon { width: 32px; height: 32px; }
 
-  background: rgba(0, 0, 0, 0.25);
-  object-fit: contain;
-}
-
-/* имя */
 .history-row .name {
-  flex: 1;
-  min-width: 0;
-
   font-weight: 700;
+  color: rgba(255, 255, 255, 0.92);
+
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-
-  color: rgba(255, 255, 255, 0.92);
 }
 
-/* стрелка */
 .history-row .chev {
   opacity: 0.55;
   font-size: 22px;
-  line-height: 1;
 }
 
 /* ========== States ========== */
