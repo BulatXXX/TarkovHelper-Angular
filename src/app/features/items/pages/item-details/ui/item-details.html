@@ -1,19 +1,37 @@
 <div class="page">
-  <div class="toolbar">
-    <a class="back" routerLink="/items">
-      <span class="back-ico" aria-hidden="true">←</span>
-      <span>Back</span>
-    </a>
-  </div>
+  <a class="back" routerLink="/items" aria-label="Back to search">
+    <span class="back-ico" aria-hidden="true">←</span>
+    <span class="back-text">Back</span>
+  </a>
 
   @if (state$ | async; as s) {
+
     @if (s.status === 'loading') {
-      <div class="hint muted">Loading…</div>
+      <div class="card skeleton" aria-busy="true">
+        <div class="top">
+          <div class="sk sk-icon" aria-hidden="true"></div>
+
+          <div class="titles">
+            <div class="sk sk-name" aria-hidden="true"></div>
+            <div class="sk sk-id" aria-hidden="true"></div>
+            <div class="sk sk-price" aria-hidden="true"></div>
+            <div class="sk sk-track" aria-hidden="true"></div>
+          </div>
+        </div>
+
+        <div class="sk sk-desc" aria-hidden="true"></div>
+        <div class="sk sk-desc short" aria-hidden="true"></div>
+
+        <div class="meta">
+          <div class="sk sk-pill" aria-hidden="true"></div>
+        </div>
+      </div>
     }
 
     @if (s.status === 'ready' && s.item) {
       <div class="card">
         <div class="top">
+          <!-- если у тебя бывает null иконка — лучше чтобы placeholder был НЕ base64, а файлом в assets -->
           <img
             class="icon"
             [ngSrc]="s.item.image512pxLink ?? s.item.iconLink ?? placeholder"
@@ -23,25 +41,22 @@
           />
 
           <div class="titles">
-            <div class="title-row">
-              <h1 class="name">{{ s.item.name }}</h1>
-
-              <button
-                class="track"
-                type="button"
-                (click)="toggleTracked()"
-                [attr.aria-pressed]="s.tracked"
-              >
-                <span class="star" [class.on]="s.tracked" aria-hidden="true">★</span>
-                <span class="track-text">{{ s.tracked ? 'Tracked' : 'Track' }}</span>
-              </button>
-            </div>
-
+            <h1 class="name">{{ s.item.name }}</h1>
             <div class="id">ID: {{ s.item.id }}</div>
 
             @if (s.item.avg24hPrice !== null) {
               <div class="price">Avg 24h price: <b>{{ s.item.avg24hPrice }}</b></div>
             }
+
+            <button
+              class="track"
+              type="button"
+              (click)="toggleTracked()"
+              [attr.aria-pressed]="s.tracked"
+            >
+              <span class="star" [class.on]="s.tracked" aria-hidden="true">★</span>
+              <span class="track-label">{{ s.tracked ? 'Tracked' : 'Track' }}</span>
+            </button>
           </div>
         </div>
 
