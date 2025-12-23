@@ -3,10 +3,11 @@ import {CommonModule} from '@angular/common';
 import {RouterModule} from '@angular/router';
 import {TrackedItemsService} from '../../../../core/services/items-tracked';
 import {toSignal} from '@angular/core/rxjs-interop';
+import {TPipe} from '../../../../core/i18n/t.pipe';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TPipe],
   templateUrl: './profile.html',
   styleUrl: './profile.scss',
 })

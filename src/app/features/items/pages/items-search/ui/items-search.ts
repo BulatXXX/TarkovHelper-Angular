@@ -4,10 +4,11 @@ import {RouterModule} from '@angular/router';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {ItemSearchViewModel} from '../item-search-view-model';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {TPipe} from '../../../../../core/i18n/t.pipe';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, TPipe],
   templateUrl: './items-search.html',
   styleUrl: './items-search.scss',
 })

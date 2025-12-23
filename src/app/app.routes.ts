@@ -1,4 +1,5 @@
 import {Routes} from '@angular/router';
+import {NotFoundComponent} from './layout/not-found';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'items' },
@@ -17,5 +18,6 @@ export const routes: Routes = [
       import('./features/profile/pages/profile/profile')
         .then(m => m.Profile),
   },
+  { path: '**', component: NotFoundComponent },
 
 ];

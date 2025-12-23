@@ -1,5 +1,25 @@
-<app-header style="color: white"/>
-<main class="main">
-  <router-outlet />
-</main>
+<div class="app-shell">
+  <app-header [user]="{ name: 'Singularity', avatarUrl: null }"></app-header>
 
+  <main class="main">
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer class="app-footer">
+    <div class="app-footer__inner">
+      <div class="app-footer__left">
+        <div class="app-footer__brand">TarkovHelper</div>
+        <div class="app-footer__note muted">Made by Singularity • data from tarkov.dev</div>
+      </div>
+
+      <nav class="app-footer__links" aria-label="Footer links">
+        <a class="app-footer__link" href="https://github.com/BulatXXX" target="_blank" rel="noopener noreferrer">
+          GitHub
+        </a>
+        <a class="app-footer__link" href="https://tarkov.dev/api/" target="_blank" rel="noopener noreferrer">
+          tarkov.dev API
+        </a>
+      </nav>
+    </div>
+  </footer>
+</div>

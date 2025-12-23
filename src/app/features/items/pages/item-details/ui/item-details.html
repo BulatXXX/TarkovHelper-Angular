@@ -1,36 +1,33 @@
 <div class="page">
   <a class="back-btn" routerLink="/items" aria-label="Back to search">
     <span class="back-ico" aria-hidden="true">←</span>
-    <span>Back</span>
+    <span>{{ 'common.back' | t | async }}</span>
   </a>
 
   @if (state$ | async; as s) {
 
     @if (s.status === 'loading' || s.status === 'idle') {
-      <div class="card">
-        <button class="track-icon-btn" type="button" disabled aria-hidden="true" title="Track">
-          ☆
-        </button>
+      <div class="card" aria-busy="true">
+        <button class="track-icon-btn" type="button" disabled aria-hidden="true" title="Track">☆</button>
 
         <div class="top">
-          <div class="icon-skel skel"></div>
+          <div class="icon-skel skel" aria-hidden="true"></div>
 
           <div class="titles">
-            <div class="skel sk-title"></div>
-            <div class="skel sk-id"></div>
-            <div class="skel sk-price"></div>
-            <div class="skel sk-btn"></div>
+            <div class="skel sk-title" aria-hidden="true"></div>
+            <div class="skel sk-id" aria-hidden="true"></div>
+            <div class="skel sk-price" aria-hidden="true"></div>
           </div>
         </div>
 
-        <div class="desc-skel">
+        <div class="desc-skel" aria-hidden="true">
           <div class="skel sk-line w-90"></div>
           <div class="skel sk-line w-80"></div>
           <div class="skel sk-line w-70"></div>
         </div>
 
-        <div class="meta">
-          <span class="pill skel sk-pill" aria-hidden="true"></span>
+        <div class="meta" aria-hidden="true">
+          <span class="pill skel sk-pill"></span>
         </div>
       </div>
     }
@@ -62,13 +59,18 @@
           <div class="titles">
             <h1 class="name">{{ s.item.name }}</h1>
 
-            <div class="id">ID: {{ s.item.id }}</div>
+            <div class="id">
+              {{ 'items.details.idLabel' | t | async }}: {{ s.item.id }}
+            </div>
 
-            @if (s.item.avg24hPrice !== null) {
-              <div class="price">Avg 24h price: <b>{{ s.item.avg24hPrice }}</b></div>
-            } @else {
-              <div class="price muted">Avg 24h price: —</div>
-            }
+            <div class="price">
+              {{ 'items.details.priceLabel' | t | async }}:
+              @if (s.item.avg24hPrice !== null) {
+                <b>{{ s.item.avg24hPrice }}</b>
+              } @else {
+                <span class="muted">{{ 'items.details.priceMissing' | t | async }}</span>
+              }
+            </div>
           </div>
         </div>
 
@@ -78,7 +80,9 @@
 
         <div class="meta">
           @if (s.item.width !== null && s.item.height !== null) {
-            <span class="pill">Size: {{ s.item.width }}×{{ s.item.height }}</span>
+            <span class="pill">
+              {{ 'items.details.sizeLabel' | t | async }}: {{ s.item.width }}×{{ s.item.height }}
+            </span>
           }
         </div>
       </div>
@@ -86,8 +90,10 @@
 
     @else if (s.status === 'error') {
       <div class="error">
-        <h2>Item not found</h2>
-        <p class="muted">Unknown id: <span class="mono">{{ s.id ?? '—' }}</span></p>
+        <h2>{{ 'items.details.notFoundTitle' | t | async }}</h2>
+        <p class="muted">
+          {{ 'items.details.unknownId' | t:{ id: (s.id ?? '—') } | async }}
+        </p>
         <p class="muted">{{ s.errorMessage }}</p>
       </div>
     }

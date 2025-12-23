@@ -1,7 +1,7 @@
 <div class="page">
   <header class="header">
-    <h1 class="title">Items search</h1>
-    <p class="subtitle muted">Type at least 2 characters to search</p>
+    <h1 class="title">{{ 'items.search.title' | t | async }}</h1>
+    <p class="subtitle muted">{{ 'items.search.subtitle' | t | async }}</p>
   </header>
 
   <div class="search-box">
@@ -10,17 +10,18 @@
         class="input"
         type="text"
         [formControl]="query"
-        placeholder="e.g. lab, salewa, ai-2..."
+        [placeholder]="('items.search.placeholder' | t | async) ?? ''"
         autocomplete="off"
       />
+
       @if (history$ | async; as history) {
         @if (isQueryEmpty && history.length > 0) {
           <div class="history-popover">
             <div class="history">
               <div class="history-head">
-                <div class="history-title">Recently viewed</div>
+                <div class="history-title">{{ 'history.title' | t | async }}</div>
                 <button class="history-clear" type="button" (click)="clearHistory()">
-                  Clear
+                  {{ 'history.clear' | t | async }}
                 </button>
               </div>
 
@@ -41,12 +42,12 @@
   </div>
 
   @if (viewModel$ | async; as vm) {
+
     @if (vm.status === 'idle') {
-      <div class="hint muted">Start typing to see results…</div>
+      <div class="hint muted">{{ 'items.search.idle' | t | async }}</div>
     }
 
     @if (vm.status === 'loading') {
-      <!-- Shimmer list (same shape as rows) -->
       <div class="list skeleton-list" aria-hidden="true">
         @for (_ of [1,2,3,4,5,6]; track _) {
           <div class="row row-skel">
@@ -60,14 +61,14 @@
 
     @if (vm.status === 'error') {
       <div class="error">
-        <div class="error-title">Request failed</div>
+        <div class="error-title">{{ 'items.search.errorTitle' | t | async }}</div>
         <div class="error-text">{{ vm.errorMessage }}</div>
       </div>
     }
 
     @if (vm.status === 'ready') {
       @if (vm.items.length === 0) {
-        <div class="hint muted">Nothing found</div>
+        <div class="hint muted">{{ 'items.search.empty' | t | async }}</div>
       } @else {
         <div class="list">
           @for (it of vm.items; track it.id) {
@@ -80,5 +81,6 @@
         </div>
       }
     }
+
   }
 </div>

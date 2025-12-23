@@ -4,11 +4,12 @@ import {ActivatedRoute, RouterModule} from '@angular/router';
 import {map} from 'rxjs/operators';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {ItemDetailsViewModel} from '../item-details-view-model';
+import {TPipe} from '../../../../../core/i18n/t.pipe';
 
 
 @Component({
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TPipe],
   templateUrl: './item-details.html',
   styleUrl: './item-details.scss',
 })
