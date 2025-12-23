@@ -30,6 +30,18 @@ query getItemById($id: ID!, $lang: LanguageCode!, $gamemode: GameMode) {
   }
 }
 `;
+
+const GET_ITEMS_BY_IDS_FOR_PROFILE = `
+query getItemsByIdsForProfile($ids: [ID!]!, $lang: LanguageCode!, $gamemode: GameMode) {
+  items(ids: $ids, lang: $lang, gameMode: $gamemode) {
+    id
+    name
+    avg24hPrice
+    iconLink
+  }
+}
+`;
+
 @Injectable({ providedIn: 'root' })
 export class ItemApiService {
   private http = inject(HttpClient);
@@ -65,4 +77,25 @@ export class ItemApiService {
 
 
   }
+  getItemsByIdsForProfile(params: {
+    ids: string[];
+    lang: 'en' | 'ru';
+    gamemode?: 'pve' | 'regular';
+  }): Observable<Array<{ id: string; name: string; avg24hPrice: number | null; iconLink?: string | null }>> {
+    return this.http
+      .post<GqlResp<{ items: Array<{ id: string; name: string; avg24hPrice: number | null; iconLink?: string | null }> }>>(
+        this.endpoint,
+        {
+          query: GET_ITEMS_BY_IDS_FOR_PROFILE,
+          variables: params,
+        }
+      )
+      .pipe(
+        map(res => {
+          if (res.errors?.length) throw new Error(res.errors[0].message);
+          return res.data?.items ?? [];
+        })
+      );
+  }
 }
+

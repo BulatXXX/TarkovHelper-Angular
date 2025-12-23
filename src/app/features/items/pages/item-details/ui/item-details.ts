@@ -3,9 +3,9 @@ import {CommonModule} from '@angular/common';
 import {ActivatedRoute, RouterModule} from '@angular/router';
 import {map} from 'rxjs/operators';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+
 import {ItemDetailsViewModel} from '../item-details-view-model';
 import {TPipe} from '../../../../../core/i18n/t.pipe';
-
 
 @Component({
   standalone: true,
@@ -20,7 +20,6 @@ export class ItemDetailsPage {
   vm = inject(ItemDetailsViewModel);
 
   placeholder = 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
-
   state$ = this.vm.state$;
 
   constructor() {
@@ -34,5 +33,9 @@ export class ItemDetailsPage {
 
   toggleTracked() {
     this.vm.toggleTracked();
+  }
+
+  setMode(mode: 'pve' | 'regular') {
+    this.vm.setMode(mode);
   }
 }

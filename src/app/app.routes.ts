@@ -15,7 +15,7 @@ export const routes: Routes = [
   {
     path: 'profile',
     loadComponent: () =>
-      import('./features/profile/pages/profile/profile')
+      import('./features/profile/pages/profile/ui/profile')
         .then(m => m.Profile),
   },
   { path: '**', component: NotFoundComponent },

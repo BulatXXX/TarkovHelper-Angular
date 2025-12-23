@@ -12,10 +12,22 @@ export const DICT_EN: Dict = {
   'items.search.empty': 'Nothing found',
   'items.search.errorTitle': 'Request failed',
 
+
   'items.details.sizeLabel': 'Size',
+  'items.details.idLabel': 'ID',
+  'items.details.priceLabel': 'Price',
+  'items.details.notFoundTitle': 'Not Found',
+  'items.details.unknownId':'Unknown ID',
+
   // History
   'history.title': 'Recently viewed',
   'history.clear': 'Clear',
+
+  'profile.title': 'Profile',
+  'profile.subtitle': 'Locally saved items',
+  'profile.avg24h': 'Price',
+  'profile.empty': 'Your list is empty',
+  'profile.goToSearch': 'Go to search',
 
   // Settings
   'settings.title': 'Settings',

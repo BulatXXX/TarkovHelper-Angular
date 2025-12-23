@@ -1,0 +1,53 @@
+<div class="page">
+  <header class="header">
+    <h1 class="title">{{ 'profile.title' | t | async }}</h1>
+    <p class="subtitle muted">{{ 'profile.subtitle' | t | async }}</p>
+  </header>
+
+  <div class="mode-row" role="group" aria-label="Mode switch">
+    <div class="segmented">
+      <button type="button" class="seg-btn" [class.active]="mode() === 'pvp'" (click)="setMode('pvp')">
+        {{ 'settings.mode.pvp' | t | async }}
+      </button>
+      <button type="button" class="seg-btn" [class.active]="mode() === 'pve'" (click)="setMode('pve')">
+        {{ 'settings.mode.pve' | t | async }}
+      </button>
+    </div>
+  </div>
+
+  @if (isEmpty()) {
+    <div class="empty muted">{{ 'profile.empty' | t | async }}</div>
+    <a class="btn" routerLink="/items">{{ 'profile.goToSearch' | t | async }}</a>
+  } @else {
+    <div class="list">
+      @for (it of rows(); track it.id) {
+        <a class="row" [routerLink]="['/items', it.id]">
+          <img class="icon" [src]="it.iconLink || placeholder" width="40" height="40" alt="" />
+
+          <div class="main">
+            @if (it.status === 'ready') {
+              <div class="name">{{ it.name }}</div>
+            } @else {
+              <div class="skel skel-name" aria-hidden="true"></div>
+            }
+
+            @if (it.status === 'ready') {
+              <div class="id muted">
+                {{ 'profile.avg24h' | t | async }}:
+                @if (it.avg24hPrice !== null && it.avg24hPrice !== undefined) {
+                  {{ it.avg24hPrice }}
+                } @else {
+                  —
+                }
+              </div>
+            } @else {
+              <div class="skel skel-price" aria-hidden="true"></div>
+            }
+          </div>
+
+          <div class="chev" aria-hidden="true">›</div>
+        </a>
+      }
+    </div>
+  }
+</div>

@@ -15,10 +15,9 @@ export type ItemDetails = {
   image512pxLink: string | null;
   wikiLink?: string | null;
 };
+
 export type TrackedItem = {
   id: string;
-  name: string;
-  avg24hPrice: number | null;
   iconLink: string | null;
-  addedAt: number;
+  updatedAt: number;
 };

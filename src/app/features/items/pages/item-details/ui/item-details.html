@@ -17,6 +17,9 @@
             <div class="skel sk-title" aria-hidden="true"></div>
             <div class="skel sk-id" aria-hidden="true"></div>
             <div class="skel sk-price" aria-hidden="true"></div>
+
+            <!-- mode skeleton -->
+            <div class="skel sk-mode" aria-hidden="true"></div>
           </div>
         </div>
 
@@ -70,6 +73,35 @@
               } @else {
                 <span class="muted">{{ 'items.details.priceMissing' | t | async }}</span>
               }
+            </div>
+
+            <!-- PvP / PvE switch -->
+            <div class="mode">
+
+
+              <div class="seg" role="tablist" aria-label="Game mode">
+                <button
+                  type="button"
+                  class="seg__btn"
+                  role="tab"
+                  [attr.aria-selected]="s.mode === 'regular'"
+                  [class.active]="s.mode === 'regular'"
+                  (click)="setMode('regular')"
+                >
+                  {{ 'settings.mode.pvp' | t | async }}
+                </button>
+
+                <button
+                  type="button"
+                  class="seg__btn"
+                  role="tab"
+                  [attr.aria-selected]="s.mode === 'pve'"
+                  [class.active]="s.mode === 'pve'"
+                  (click)="setMode('pve')"
+                >
+                  {{ 'settings.mode.pve' | t | async }}
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -49,7 +49,6 @@ export class ItemDetailsViewModel {
   constructor() {
     this.state$.pipe(
       map(s => ({ id: s.id, mode: s.mode })),
-      // если быстро кликаешь по разным товарам (или меняешь режим) — защитимся от дребезга
       debounceTime(0),
       distinctUntilChanged((a, b) => a.id === b.id && a.mode === b.mode),
 
@@ -126,10 +125,8 @@ export class ItemDetailsViewModel {
 
     this.trackedService.toggle({
       id: s.item.id,
-      name: s.item.name,
-      avg24hPrice: s.item.avg24hPrice,
       iconLink: s.item.iconLink ?? null,
-      addedAt: 0,
+      updatedAt: Date.now(),
     });
 
     this.patch({ tracked: this.trackedService.isTracked(s.item.id) });

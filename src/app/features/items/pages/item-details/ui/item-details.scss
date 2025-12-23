@@ -236,7 +236,72 @@
   height: 36px;
   border-radius: 999px;
 }
+/* ===== Mode switch (PvP / PvE) ===== */
+.mode {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
 
+.mode__label {
+  font-size: 12px;
+}
+
+.seg {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+}
+
+.seg__btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.86);
+  font: inherit;
+
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: 140ms ease;
+
+  white-space: nowrap;
+}
+
+.seg__btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.seg__btn.active {
+  background: rgba(255, 255, 255, 0.10);
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* skeleton for mode switch */
+.sk-mode {
+  height: 34px;
+  width: 220px;
+  margin-top: 12px;
+  border-radius: 999px;
+}
+
+/* mobile */
+@media (max-width: 599px) {
+  .mode {
+    align-items: stretch;
+  }
+  .seg {
+    width: 100%;
+  }
+  .sk-mode {
+    width: 100%;
+  }
+}
 /* ===== Responsive ===== */
 @media (max-width: 599px) {
   .page { padding: 14px; }
