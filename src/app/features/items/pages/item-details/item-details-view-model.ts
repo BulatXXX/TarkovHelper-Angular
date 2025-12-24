@@ -126,7 +126,6 @@ export class ItemDetailsViewModel {
     this.trackedService.toggle({
       id: s.item.id,
       iconLink: s.item.iconLink ?? null,
-      updatedAt: Date.now(),
     });
 
     this.patch({ tracked: this.trackedService.isTracked(s.item.id) });

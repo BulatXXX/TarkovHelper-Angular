@@ -1,26 +1,30 @@
-import {Component, computed, inject} from '@angular/core';
+import {Component, computed, inject, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {RouterModule} from '@angular/router';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {distinctUntilChanged, map} from 'rxjs';
+
 import {Mode, ProfileViewModel} from '../profile-view-model';
 import {TPipe} from '../../../../../core/i18n/t.pipe';
 import {SettingsService} from '../../../../../core/services/settings-service';
 
+import {AuthService} from '../../../../../core/auth/auth.service';
+import {SyncService, SyncStrategy} from '../../../../../core/services/sync.service';
 
 @Component({
   standalone: true,
   imports: [CommonModule, RouterModule, TPipe],
   templateUrl: './profile.html',
   styleUrls: ['./profile.scss'],
-  providers: [ProfileViewModel], // ✅ VM на экран
+  providers: [ProfileViewModel],
 })
 export class Profile {
   private vm = inject(ProfileViewModel);
   private settings = inject(SettingsService);
+  private auth = inject(AuthService);
+  private sync = inject(SyncService);
 
   rows = toSignal(this.vm.rows$, { initialValue: [] });
-
   isEmpty = computed(() => this.rows().length === 0);
 
   mode = toSignal(
@@ -31,8 +35,39 @@ export class Profile {
     { initialValue: 'pvp' as Mode }
   );
 
+  // auth
+  private authState = toSignal(this.auth.state$, { initialValue: { status: 'guest' } as any });
+  isAuthed = computed(() => this.authState()?.status === 'auth');
+  userName = computed(() => (this.authState()?.status === 'auth' ? this.authState().user.name : 'User'));
+
+  // sync ui
+  syncOpen = signal(false);
+  syncing = signal(false);
+  syncError = signal<string | null>(null);
+
   setMode(mode: Mode) {
     this.settings.setMode(mode);
+  }
+
+  toggleSyncPanel() {
+    this.syncError.set(null);
+    this.syncOpen.update(v => !v);
+  }
+
+  runSync(strategy: SyncStrategy) {
+    this.syncError.set(null);
+    this.syncing.set(true);
+
+    this.sync.sync(this.mode(), strategy).subscribe({
+      next: () => {
+        this.syncing.set(false);
+        this.syncOpen.set(false);
+      },
+      error: (e) => {
+        this.syncing.set(false);
+        this.syncError.set(String(e?.message ?? e));
+      },
+    });
   }
 
   placeholder = 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';

@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
-import {catchError, Observable, switchMap, throwError} from 'rxjs';
+import {catchError, Observable, throwError} from 'rxjs';
 import {AuthService} from './auth.service';
 
 @Injectable()
@@ -19,17 +19,10 @@ export class AuthInterceptor implements HttpInterceptor {
         if (!(err instanceof HttpErrorResponse)) return throwError(() => err);
 
         // если 401 и это НЕ refresh/login/register/me — пробуем refresh 1 раз
+
         if (err.status === 401 && !this.isAuthEndpoint(req.url)) {
-          return this.auth.refresh().pipe(
-            switchMap(newToken => {
-              const retry = req.clone({ setHeaders: { Authorization: `Bearer ${newToken}` } });
-              return next.handle(retry);
-            }),
-            catchError(refreshErr => {
-              this.auth.logout();
-              return throwError(() => refreshErr);
-            })
-          );
+          this.auth.logout();
+          return throwError(() => err);
         }
 
         return throwError(() => err);
@@ -40,6 +33,7 @@ export class AuthInterceptor implements HttpInterceptor {
   private isAuthEndpoint(url: string): boolean {
     return url.includes('/auth/login')
       || url.includes('/auth/register')
-      || url.includes('/auth/refresh');
+      || url.includes('/auth/refresh')
+      || url.includes('/auth/me');
   }
 }

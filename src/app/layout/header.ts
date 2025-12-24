@@ -1,40 +1,51 @@
-import {Component, Input} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {RouterModule} from '@angular/router';
-import {TPipe} from '../core/i18n/t.pipe';
 import {AsyncPipe} from '@angular/common';
+import {map} from 'rxjs';
 
-export type HeaderUser = {
-  name: string;
-  avatarUrl?: string | null;
-};
+import {AuthService} from '../core/auth/auth.service';
+import {TPipe} from '../core/i18n/t.pipe';
+import {url} from 'zod';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterModule, TPipe, AsyncPipe],
+  imports: [RouterModule, AsyncPipe, TPipe],
   template: `
     <header class="hdr">
       <div class="hdr__inner">
-        <a class="pill pill--brand" routerLink="/items" [attr.aria-label]="('header.searchAria' | t | async) ?? ''">
+        <a
+          class="pill pill--brand"
+          routerLink="/items"
+          [attr.aria-label]="(('header.searchAria' | t | async) ?? 'Open search')"
+        >
           TarkovHelper
         </a>
 
-        <a class="pill pill--user" routerLink="/profile" [attr.aria-label]="('header.profileAria' | t | async) ?? ''">
-      <span class="avatar" aria-hidden="true">
-        @if (user?.avatarUrl) {
-          <img class="avatar__img" [src]="user!.avatarUrl!" alt="" />
-        } @else {
-          <span class="avatar__fallback">{{ initial }}</span>
-        }
-      </span>
+        <a
+          class="pill pill--user"
+          routerLink="/profile"
+          [attr.aria-label]="(('header.profileAria' | t | async) ?? 'Open profile')"
+        >
+          <span class="avatar" aria-hidden="true">
+            @if (isAuthed$ | async) {
+              @if (avatarUrl$ | async) {
+                <img class="avatar__img" [src]="(avatarUrl$ | async)!" alt="" />
+              } @else {
+                <span class="avatar__fallback">{{ (initial$ | async) ?? 'U' }}</span>
+              }
+            } @else {
+              <span class="avatar__fallback">★</span>
+            }
+          </span>
 
           <span class="pill__text">
-        @if (user?.name) {
-          {{ user!.name }}
-        } @else {
-          {{ 'common.guest' | t | async }}
-        }
-      </span>
+            @if (isAuthed$ | async) {
+              {{ (name$ | async) ?? 'User' }}
+            } @else {
+              Tracked items
+            }
+          </span>
         </a>
       </div>
     </header>
@@ -65,7 +76,6 @@ export type HeaderUser = {
       min-width: 0;
     }
 
-    /* shared pill */
     .pill{
       display: inline-flex;
       align-items: center;
@@ -134,19 +144,33 @@ export type HeaderUser = {
       opacity: 0.95;
     }
 
-    /* mobile */
     @media (max-width: 599px){
       .hdr{ padding: 10px 12px; }
       .pill{ padding: 8px 10px; }
       .pill--user{ max-width: 200px; }
     }
-  `]
+  `],
 })
 export class AppHeader {
-  @Input() user: HeaderUser | null = null;
+  private auth = inject(AuthService);
 
-  get initial(): string {
-    const n = (this.user?.name ?? 'G').trim();
-    return (n[0] ?? 'G').toUpperCase();
-  }
+  readonly state$ = this.auth.state$;
+
+  readonly isAuthed$ = this.state$.pipe(map(s => s.status === 'auth'));
+
+  readonly name$ = this.state$.pipe(
+    map(s => (s.status === 'auth' ? s.user.name : null))
+  );
+
+  readonly avatarUrl$ = this.state$.pipe(
+    map(s => (s.status === 'auth' ? (s.user.avatarUrl ?? null) : null))
+  );
+
+  readonly initial$ = this.name$.pipe(
+    map(name => {
+      const n = (name ?? 'U').trim();
+      return (n[0] ?? 'U').toUpperCase();
+    })
+  );
+  protected readonly url = url;
 }
