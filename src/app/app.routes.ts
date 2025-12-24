@@ -1,5 +1,7 @@
 import {Routes} from '@angular/router';
 import {NotFoundComponent} from './layout/not-found';
+import {AuthLoginPage} from './features/auth/auth-login.page/auth-login.page';
+import {AuthRegisterPage} from './features/auth/auth-register.page/auth-register.page';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'items' },
@@ -18,6 +20,8 @@ export const routes: Routes = [
       import('./features/profile/pages/profile/ui/profile')
         .then(m => m.Profile),
   },
+  { path: 'auth/login', component: AuthLoginPage },
+  { path: 'auth/register', component: AuthRegisterPage },
   { path: '**', component: NotFoundComponent },
 
 ];

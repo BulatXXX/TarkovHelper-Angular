@@ -12,3 +12,5 @@ export type AuthTokens = {
 export type AuthState =
   | { status: 'guest' }
   | { status: 'auth'; user: AuthUser; accessToken: string };
+
+

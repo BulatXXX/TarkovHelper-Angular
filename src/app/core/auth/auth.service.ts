@@ -7,8 +7,8 @@ import {AuthState, AuthTokens, AuthUser} from './auth.types';
 type LoginReq = { email: string; password: string };
 type RegisterReq = { email: string; password: string; name: string };
 
-type LoginResp = { tokens: AuthTokens; user: AuthUser };
-type RegisterResp = { tokens: AuthTokens; user: AuthUser };
+type LoginResp = { token: string; user: AuthUser };
+type RegisterResp = { token: string; user: AuthUser };
 type MeResp = { user: AuthUser };
 
 // если сделаешь refresh:
@@ -40,20 +40,20 @@ export class AuthService {
 
   login(req: LoginReq): Observable<AuthUser> {
     return this.http.post<LoginResp>(`${API_BASE_URL}/auth/login`, req).pipe(
-      tap(res => this.setAuth(res.tokens.accessToken, res.user)),
+      tap(res => this.setAuth(res.token, res.user)),
       map(res => res.user),
     );
   }
 
   register(req: RegisterReq): Observable<AuthUser> {
     return this.http.post<RegisterResp>(`${API_BASE_URL}/auth/register`, req).pipe(
-      tap(res => this.setAuth(res.tokens.accessToken, res.user)),
+      tap(res => this.setAuth(res.token, res.user)),
       map(res => res.user),
     );
   }
 
   me(): Observable<AuthUser> {
-    return this.http.get<MeResp>(`${API_BASE_URL}/auth/me`).pipe(
+    return this.http.get<MeResp>(`${API_BASE_URL}/me`).pipe(
       tap(res => this.setUser(res.user)),
       map(res => res.user),
     );

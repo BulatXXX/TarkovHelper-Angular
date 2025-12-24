@@ -1,14 +1,18 @@
 import {inject, Injectable} from '@angular/core';
-import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
+import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest,} from '@angular/common/http';
 import {catchError, Observable, throwError} from 'rxjs';
 import {AuthService} from './auth.service';
+import {API_BASE_URL} from '../api/api.config';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   private auth = inject(AuthService);
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const token = this.auth.accessToken;
+    // ✅ Токен только для твоего бэка
+    const isOurApi = req.url.startsWith(API_BASE_URL);
+
+    const token = isOurApi ? this.auth.accessToken : null;
 
     const authReq = token
       ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
@@ -16,24 +20,12 @@ export class AuthInterceptor implements HttpInterceptor {
 
     return next.handle(authReq).pipe(
       catchError((err: unknown) => {
-        if (!(err instanceof HttpErrorResponse)) return throwError(() => err);
-
-        // если 401 и это НЕ refresh/login/register/me — пробуем refresh 1 раз
-
-        if (err.status === 401 && !this.isAuthEndpoint(req.url)) {
+        // ✅ Никаких refresh/ретраев пока не сделал refresh на бэке
+        if (err instanceof HttpErrorResponse && err.status === 401 && isOurApi) {
           this.auth.logout();
-          return throwError(() => err);
         }
-
         return throwError(() => err);
       })
     );
-  }
-
-  private isAuthEndpoint(url: string): boolean {
-    return url.includes('/auth/login')
-      || url.includes('/auth/register')
-      || url.includes('/auth/refresh')
-      || url.includes('/auth/me');
   }
 }

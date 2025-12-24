@@ -13,8 +13,12 @@
 
       <div class="header__actions">
         @if (isAuthed()) {
-          <button class="btn btn--ghost" type="button" (click)="toggleSyncPanel()">
-            Sync
+          <button class="icon-btn" type="button" (click)="openSyncDialog()" aria-label="Sync">
+            ☁
+          </button>
+
+          <button class="icon-btn" type="button" (click)="logout()" aria-label="Logout" title="Logout">
+            ⎋
           </button>
         } @else {
           <a class="btn btn--ghost" routerLink="/auth/login">Sign in</a>
@@ -24,30 +28,39 @@
     </div>
   </header>
 
-  @if (isAuthed() && syncOpen()) {
-    <div class="sync-card" role="group" aria-label="Sync strategies">
-      <div class="sync-title">Choose sync strategy</div>
-      <div class="sync-actions">
-        <button class="btn btn--primary" type="button" [disabled]="syncing()" (click)="runSync('localToServer')">
-          Local → Server
-        </button>
+  <!-- Sync dialog (temporary, we will decorate later) -->
+  @if (isAuthed() && syncDialogOpen()) {
+    <div class="dialog-backdrop" (click)="closeSyncDialog()" aria-hidden="true"></div>
 
-        <button class="btn btn--ghost" type="button" [disabled]="syncing()" (click)="runSync('serverToLocal')">
-          Server → Local
-        </button>
-
-        <button class="btn btn--ghost" type="button" [disabled]="syncing()" (click)="runSync('merge')">
-          Merge
-        </button>
+    <div class="dialog" role="dialog" aria-modal="true" aria-label="Sync dialog">
+      <div class="dialog__head">
+        <div class="dialog__title">Choose sync strategy</div>
+        <button class="dialog__close" type="button" (click)="closeSyncDialog()" aria-label="Close">✕</button>
       </div>
 
-      @if (syncError()) {
-        <div class="sync-error">{{ syncError() }}</div>
-      }
+      <div class="dialog__body">
+        <div class="sync-actions">
+          <button class="btn btn--primary" type="button" [disabled]="syncing()" (click)="runSync('localToServer')">
+            Local → Server
+          </button>
 
-      @if (syncing()) {
-        <div class="sync-note muted">Syncing…</div>
-      }
+          <button class="btn btn--ghost" type="button" [disabled]="syncing()" (click)="runSync('serverToLocal')">
+            Server → Local
+          </button>
+
+          <button class="btn btn--ghost" type="button" [disabled]="syncing()" (click)="runSync('merge')">
+            Merge
+          </button>
+        </div>
+
+        @if (syncError()) {
+          <div class="sync-error">{{ syncError() }}</div>
+        }
+
+        @if (syncing()) {
+          <div class="sync-note muted">Syncing…</div>
+        }
+      </div>
     </div>
   }
 

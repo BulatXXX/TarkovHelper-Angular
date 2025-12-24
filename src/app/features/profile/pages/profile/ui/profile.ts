@@ -35,13 +35,14 @@ export class Profile {
     { initialValue: 'pvp' as Mode }
   );
 
-  // auth
   private authState = toSignal(this.auth.state$, { initialValue: { status: 'guest' } as any });
   isAuthed = computed(() => this.authState()?.status === 'auth');
-  userName = computed(() => (this.authState()?.status === 'auth' ? this.authState().user.name : 'User'));
+  userName = computed(() =>
+    this.authState()?.status === 'auth' ? this.authState().user.name : 'User'
+  );
 
-  // sync ui
-  syncOpen = signal(false);
+  // dialog
+  syncDialogOpen = signal(false);
   syncing = signal(false);
   syncError = signal<string | null>(null);
 
@@ -49,9 +50,14 @@ export class Profile {
     this.settings.setMode(mode);
   }
 
-  toggleSyncPanel() {
+  openSyncDialog() {
     this.syncError.set(null);
-    this.syncOpen.update(v => !v);
+    this.syncDialogOpen.set(true);
+  }
+
+  closeSyncDialog() {
+    if (this.syncing()) return; // чтобы не закрыть во время запроса
+    this.syncDialogOpen.set(false);
   }
 
   runSync(strategy: SyncStrategy) {
@@ -61,13 +67,18 @@ export class Profile {
     this.sync.sync(this.mode(), strategy).subscribe({
       next: () => {
         this.syncing.set(false);
-        this.syncOpen.set(false);
+        this.syncDialogOpen.set(false);
       },
       error: (e) => {
         this.syncing.set(false);
         this.syncError.set(String(e?.message ?? e));
       },
     });
+  }
+
+  logout() {
+    this.auth.logout();
+    this.syncDialogOpen.set(false);
   }
 
   placeholder = 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
