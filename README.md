@@ -1,59 +1,164 @@
-# TarkovHelper
+# TarkovHelper — Описание программы (в формате README)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.4.
+> Структура этого README собрана по ГОСТ 19.402-78 «Описание программы» (разделы: общие сведения, функциональное назначение, логическая структура, тех. средства, вызов/загрузка, входные/выходные данные).  [oai_citation:0‡4294850112.pdf](sediment://file_00000000689871f4aaa70373f72a3860)
 
-## Development server
+---
 
-To start a local development server, run:
+## 1. Общие сведения
 
+**Наименование программы:** TarkovHelper (Web-приложение)
+
+**Назначение:** приложение для ведения списка отслеживаемых предметов (tracked items) с возможностью авторизации пользователя и синхронизации списка с сервером.
+
+**ПО для функционирования:**
+- Frontend: Angular (standalone components), браузер (Chrome/Chromium/Safari).
+- Backend API: HTTP-сервис (локально: `http://localhost:8080`).
+- Внешний источник данных (для карточек предметов): `https://api.tarkov.dev/graphql` (GraphQL).
+
+**Языки программирования:**
+- Frontend: TypeScript / HTML / SCSS
+- Backend: зависит от реализации сервера (в README описывается взаимодействие по HTTP API).
+
+---
+
+## 2. Функциональное назначение
+
+Программа решает задачи:
+- ведение **локального** списка отслеживаемых предметов (tracked items);
+- отображение списка с данными предметов (название, цена за 24ч и т.д.);
+- авторизация/регистрация пользователя;
+- синхронизация локального списка с серверным списком;
+- визуальная индикация состояния синхронизации (кнопка “облачко” + диалог сравнения/стратегий).
+
+**Функциональные ограничения:**
+- синхронизация доступна только для авторизованных пользователей;
+
+---
+
+## 3. Описание логической структуры
+
+### 3.1. Основные сущности
+
+**TrackedItem**
+- `id: string` — идентификатор предмета
+- `iconLink: string | null` — ссылка на иконку (может быть null)
+- `updatedAt: number` — unix-time (ms), для LWW-слияния
+
+### 3.2. Экран Profile
+
+Экран Profile:
+- показывает список tracked items;
+- даёт переключатель режима (если используется);
+- для авторизованного пользователя:
+  - кнопка синхронизации (облачко) с индикацией состояния,
+  - кнопка logout (дверь).
+
+### 3.3. Синхронизация
+
+Сервис синхронизации выполняет:
+1) загрузку списка с сервера (`GET /tracked`);
+2) получение локального списка (TrackedItemsService snapshot);
+3) применение стратегии:
+  - **serverToLocal**: заменить локальный список серверным;
+  - **localToServer**: перезаписать сервер локальным;
+  - **merge**: объединить по `updatedAt` (LWW) и отправить результат на сервер.
+4) сохранение итогового списка локально (replaceAll).
+
+**Merge (LWW):**
+- при конфликте выбирается элемент с максимальным `updatedAt`;
+- `iconLink` подтягивается аккуратно: если у победителя `null`, берём у проигравшего, иначе `null`.
+
+### 3.4. Сравнение списков (diff)
+
+Для того чтобы пользователь видел, что **локальный и серверный списки отличаются**, используется сравнение:
+- `onlyLocal` — есть только локально
+- `onlyServer` — есть только на сервере
+- `conflicts` — есть в обоих, но различаются (updatedAt/iconLink)
+- `inSync` — отличий нет
+
+Этот diff используется:
+- для “бейджа” на облачке (✓ / ! / × / ↻),
+- и для контента диалога синхронизации (показать что где лежит).
+
+---
+
+## 4. Используемые технические средства
+
+**Клиент:**
+- ПК/ноутбук, современный браузер.
+- Node.js (для сборки/запуска фронта), npm/yarn/pnpm.
+
+**Сервер:**
+- HTTP API, доступный фронту по сети (локально/удалённо).
+
+---
+
+## 5. Вызов и загрузка
+
+### 5.1. Запуск frontend (пример)
 ```bash
+npm install
+npm run start
+# или
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+### 5.2. Запуск backend
 
-## Code scaffolding
+Backend должен быть доступен по API_BASE_URL (например http://localhost:8080).
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## 6. Входные данные
 
-```bash
-ng generate component component-name
+### 6.1. Авторизация/регистрация
+
+Register: JSON
+``` json
+{
+  "email": "user@example.com",
+  "password": "password123",
+  "name": "User"
+}
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
+Login: JSON
+``` json
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
 ```
 
-## Building
+### 6.2. Трекинг предметов
+-	пользователь добавляет/удаляет предметы, формируя локальный список TrackedItem[]
+-	при синке фронт отправляет/получает JSON со списком items
 
-To build the project run:
+---
 
-```bash
-ng build
+## 7. Выходные данные
+
+### 7.1. Ответы auth
+
+Register/Login: JSON
+
+```json
+{
+  "token": "<jwt>",
+  "user": {
+    "id": "<uuid>",
+    "email": "user@example.com",
+    "name": "User",
+    "avatarUrl": null
+  }
+}
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+### 7.2. Ответы tracked
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
+GET /tracked:
+```json
+{ "items": [ { "id": "...", "iconLink": null, "updatedAt": 0 } ] }
 ```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
+PUT /tracked:
+```json
+{ "items": [] }
 ```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
