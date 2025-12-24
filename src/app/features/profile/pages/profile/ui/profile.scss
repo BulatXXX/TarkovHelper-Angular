@@ -374,6 +374,149 @@
   .header__actions .btn{ width: 100%; text-align: center; }
   .sync-actions .btn{ width: 100%; }
 }
+sync-btn{
+  position: relative;
+}
+
+/* маленькая точка-статус */
+.sync-btn::before{
+  content: "";
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.35);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: 140ms ease;
+}
+
+/* спиннер поверх кнопки */
+.sync-btn::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 2px solid rgba(255,255,255,0.25);
+  border-top-color: rgba(255,255,255,0.85);
+  opacity: 0;
+  animation: spin 0.75s linear infinite;
+}
+
+.sync-btn.is-loading{
+  color: transparent; /* прячем ☁ под спиннером */
+}
+.sync-btn.is-loading::after{
+  opacity: 1;
+}
+
+.sync-btn.is-success{
+  border-color: rgba(120,255,120,0.35);
+  background: rgba(120,255,120,0.08);
+}
+.sync-btn.is-success::before{
+  opacity: 1;
+  transform: scale(1);
+  background: rgba(120,255,120,0.90);
+}
+
+.sync-btn.is-error{
+  border-color: rgba(255,80,80,0.45);
+  background: rgba(255,80,80,0.10);
+}
+.sync-btn.is-error::before{
+  opacity: 1;
+  transform: scale(1);
+  background: rgba(255,80,80,0.95);
+}
+.sync-btn{ position: relative; padding-right: 34px; }
+
+.badge{
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  font-size: 14px;
+  opacity: 0.95;
+}
+
+.count{
+  position: absolute;
+  right: 8px;
+  bottom: 6px;
+  font-size: 10px;
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}
+
+.sync-btn.is-ok{
+  border-color: rgba(120,255,120,0.30);
+  background: rgba(120,255,120,0.06);
+}
+.sync-btn.is-diff{
+  border-color: rgba(255,200,80,0.35);
+  background: rgba(255,200,80,0.06);
+}
+.sync-btn.is-err{
+  border-color: rgba(255,80,80,0.42);
+  background: rgba(255,80,80,0.08);
+}
+
+/* маленький “шевелящийся” вид при loading */
+.sync-btn.is-checking,
+.sync-btn.is-syncing{
+  opacity: 0.9;
+}
+
+/* diff UI */
+.diff-box{
+  margin-bottom: 12px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.03);
+  border-radius: 14px;
+  padding: 12px;
+}
+.diff-head{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+.diff-title{ font-weight: 800; }
+.diff-sub{ font-size: 12px; }
+
+.diff-cols{ margin-top:10px; display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+.diff-col--full{ grid-column: 1 / -1; }
+.diff-col__title{ font-weight:700; font-size:12px; margin-bottom:6px; opacity:0.9; }
+
+.diff-row{
+  display:flex; align-items:center; gap:10px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.18);
+  margin-top: 6px;
+}
+.diff-ico{ width: 22px; height: 22px; border-radius: 8px; object-fit: contain; background: rgba(0,0,0,0.25); padding: 2px; }
+.diff-id{ font-size: 12px; opacity: 0.9; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; }
+
+.diff-pill{
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  border: 1px solid rgba(255,255,255,0.10);
+  opacity: 0.9;
+}
+.diff-pill.win-local{ border-color: rgba(120,255,120,0.35); background: rgba(120,255,120,0.08); }
+.diff-pill.win-server{ border-color: rgba(120,180,255,0.35); background: rgba(120,180,255,0.08); }
+
+@media (max-width: 599px){
+  .diff-cols{ grid-template-columns: 1fr; }
+  .diff-col--full{ grid-column: auto; }
+}
+
+@keyframes spin{
+  to { transform: rotate(360deg); }
+}
 /* 3 брейкпоинта */
 @media (max-width: 599px) {
   .title { font-size: 22px; }

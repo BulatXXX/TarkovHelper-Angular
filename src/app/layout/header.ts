@@ -1,38 +1,35 @@
-import {Component, inject} from '@angular/core';
+import {Component, computed, inject} from '@angular/core';
 import {RouterModule} from '@angular/router';
-import {AsyncPipe} from '@angular/common';
-import {map} from 'rxjs';
+import {toSignal} from '@angular/core/rxjs-interop';
 
 import {AuthService} from '../core/auth/auth.service';
 import {TPipe} from '../core/i18n/t.pipe';
-import {url} from 'zod';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterModule, AsyncPipe, TPipe],
+  imports: [RouterModule, TPipe, AsyncPipe],
   template: `
     <header class="hdr">
       <div class="hdr__inner">
-        <a
-          class="pill pill--brand"
-          routerLink="/items"
-          [attr.aria-label]="(('header.searchAria' | t | async) ?? 'Open search')"
-        >
+        <a class="pill pill--brand"
+           routerLink="/items"
+           [attr.aria-label]="(('header.searchAria' | t | async) ?? 'Open search')">
           TarkovHelper
         </a>
 
-        <a
-          class="pill pill--user"
-          routerLink="/profile"
-          [attr.aria-label]="(('header.profileAria' | t | async) ?? 'Open profile')"
-        >
+        <!-- Profile pill (always) -->
+        <a class="pill pill--user"
+           routerLink="/profile"
+           [attr.aria-label]="(('header.profileAria' | t | async) ?? 'Open profile')">
+
           <span class="avatar" aria-hidden="true">
-            @if (isAuthed$ | async) {
-              @if (avatarUrl$ | async) {
-                <img class="avatar__img" [src]="(avatarUrl$ | async)!" alt="" />
+            @if (isAuthed()) {
+              @if (avatarUrl()) {
+                <img class="avatar__img" [src]="avatarUrl()!" alt="" />
               } @else {
-                <span class="avatar__fallback">{{ (initial$ | async) ?? 'U' }}</span>
+                <span class="avatar__fallback">{{ initial() }}</span>
               }
             } @else {
               <span class="avatar__fallback">★</span>
@@ -40,13 +37,23 @@ import {url} from 'zod';
           </span>
 
           <span class="pill__text">
-            @if (isAuthed$ | async) {
-              {{ (name$ | async) ?? 'User' }}
+            @if (isAuthed()) {
+              {{ userName() }}
             } @else {
               Tracked items
             }
           </span>
         </a>
+
+        <!-- Login icon (only for guest) -->
+        @if (!isAuthed()) {
+          <a class="icon-btn"
+             routerLink="/auth/login"
+             aria-label="Sign in"
+             title="Sign in">
+            👤
+          </a>
+        }
       </div>
     </header>
   `,
@@ -58,7 +65,6 @@ import {url} from 'zod';
 
       padding: 12px 16px;
       border-bottom: 1px solid rgba(255,255,255,0.10);
-
       background: rgba(0,0,0,0.25);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
@@ -69,7 +75,7 @@ import {url} from 'zod';
       margin: 0 auto;
 
       display: grid;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: 1fr auto auto;
       align-items: center;
       gap: 12px;
 
@@ -108,7 +114,7 @@ import {url} from 'zod';
 
     .pill--user{
       justify-self: end;
-      max-width: 240px;
+      max-width: 260px;
     }
 
     .pill__text{
@@ -144,33 +150,42 @@ import {url} from 'zod';
       opacity: 0.95;
     }
 
+    .icon-btn{
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.04);
+      color: rgba(255,255,255,0.90);
+      text-decoration: none;
+      display: grid;
+      place-items: center;
+      transition: 140ms ease;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .icon-btn:hover{
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.22);
+      color: rgba(255,255,255,0.95);
+    }
+
     @media (max-width: 599px){
       .hdr{ padding: 10px 12px; }
       .pill{ padding: 8px 10px; }
       .pill--user{ max-width: 200px; }
+      .icon-btn{ width: 42px; height: 42px; }
     }
   `],
 })
 export class AppHeader {
   private auth = inject(AuthService);
 
-  readonly state$ = this.auth.state$;
+  private state = toSignal(this.auth.state$, { initialValue: { status: 'guest' } as any });
 
-  readonly isAuthed$ = this.state$.pipe(map(s => s.status === 'auth'));
-
-  readonly name$ = this.state$.pipe(
-    map(s => (s.status === 'auth' ? s.user.name : null))
-  );
-
-  readonly avatarUrl$ = this.state$.pipe(
-    map(s => (s.status === 'auth' ? (s.user.avatarUrl ?? null) : null))
-  );
-
-  readonly initial$ = this.name$.pipe(
-    map(name => {
-      const n = (name ?? 'U').trim();
-      return (n[0] ?? 'U').toUpperCase();
-    })
-  );
-  protected readonly url = url;
+  isAuthed = computed(() => this.state()?.status === 'auth');
+  userName = computed(() => (this.state()?.status === 'auth' ? this.state().user.name : 'User'));
+  avatarUrl = computed(() => (this.state()?.status === 'auth' ? (this.state().user.avatarUrl ?? null) : null));
+  initial = computed(() => ((this.userName()?.trim()?.[0] ?? 'U').toUpperCase()));
 }

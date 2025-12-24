@@ -13,51 +13,118 @@
 
       <div class="header__actions">
         @if (isAuthed()) {
-          <button class="icon-btn" type="button" (click)="openSyncDialog()" aria-label="Sync">
+          <button
+            class="icon-btn sync-btn"
+            type="button"
+            (click)="openSyncDialog()"
+            aria-label="Sync"
+            [attr.title]="syncUi().status === 'outOfSync' ? 'Out of sync' : 'Sync'"
+            [class.is-checking]="syncUi().status === 'checking'"
+            [class.is-syncing]="syncUi().status === 'syncing'"
+            [class.is-ok]="syncUi().status === 'inSync'"
+            [class.is-diff]="syncUi().status === 'outOfSync'"
+            [class.is-err]="syncUi().status === 'error'"
+          >
             ☁
+            @if (cloudBadge()) { <span class="badge">{{ cloudBadge() }}</span> }
+
+            @if (syncCompare()) {
+              <span class="count">{{ syncCompare()!.localCount }}/{{ syncCompare()!.serverCount }}</span>
+            }
           </button>
 
           <button class="icon-btn" type="button" (click)="logout()" aria-label="Logout" title="Logout">
             ⎋
           </button>
-        } @else {
-          <a class="btn btn--ghost" routerLink="/auth/login">Sign in</a>
-          <a class="btn btn--ghost" routerLink="/auth/register">Register</a>
         }
       </div>
     </div>
   </header>
 
-  <!-- Sync dialog (temporary, we will decorate later) -->
   @if (isAuthed() && syncDialogOpen()) {
     <div class="dialog-backdrop" (click)="closeSyncDialog()" aria-hidden="true"></div>
 
     <div class="dialog" role="dialog" aria-modal="true" aria-label="Sync dialog">
       <div class="dialog__head">
-        <div class="dialog__title">Choose sync strategy</div>
+        <div class="dialog__title">Sync</div>
         <button class="dialog__close" type="button" (click)="closeSyncDialog()" aria-label="Close">✕</button>
       </div>
 
       <div class="dialog__body">
+        @if (syncCompare()) {
+          <div class="diff-box">
+            <div class="diff-head">
+              <div class="diff-title">
+                @if (syncCompare()!.inSync) { In sync } @else { Out of sync }
+              </div>
+              <div class="diff-sub muted">
+                Local: {{ syncCompare()!.localCount }} • Server: {{ syncCompare()!.serverCount }}
+              </div>
+            </div>
+
+            @if (!syncCompare()!.inSync) {
+              <div class="diff-cols">
+                <div class="diff-col">
+                  <div class="diff-col__title">Only on device</div>
+                  @for (r of syncCompare()!.onlyLocal; track r.id) {
+                    <div class="diff-row">
+                      <img class="diff-ico" [src]="r.iconLink || placeholder" alt="" />
+                      <div class="diff-id">{{ r.id }}</div>
+                    </div>
+                  }
+                  @if (syncCompare()!.onlyLocal.length === 0) { <div class="muted">—</div> }
+                </div>
+
+                <div class="diff-col">
+                  <div class="diff-col__title">Only on server</div>
+                  @for (r of syncCompare()!.onlyServer; track r.id) {
+                    <div class="diff-row">
+                      <img class="diff-ico" [src]="r.iconLink || placeholder" alt="" />
+                      <div class="diff-id">{{ r.id }}</div>
+                    </div>
+                  }
+                  @if (syncCompare()!.onlyServer.length === 0) { <div class="muted">—</div> }
+                </div>
+
+                <div class="diff-col diff-col--full">
+                  <div class="diff-col__title">Conflicts (newer wins)</div>
+                  @for (r of syncCompare()!.conflicts; track r.id) {
+                    <div class="diff-row">
+                      <img class="diff-ico" [src]="r.iconLink || placeholder" alt="" />
+                      <div class="diff-id">{{ r.id }}</div>
+                      <div class="diff-pill" [class.win-local]="r.winner==='local'" [class.win-server]="r.winner==='server'">
+                        {{ r.winner }}
+                      </div>
+                    </div>
+                  }
+                  @if (syncCompare()!.conflicts.length === 0) { <div class="muted">—</div> }
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="muted">Comparing…</div>
+        }
+
         <div class="sync-actions">
-          <button class="btn btn--primary" type="button" [disabled]="syncing()" (click)="runSync('localToServer')">
+          <button class="btn btn--primary" type="button" [disabled]="isSyncing()" (click)="runSync('localToServer')">
             Local → Server
           </button>
 
-          <button class="btn btn--ghost" type="button" [disabled]="syncing()" (click)="runSync('serverToLocal')">
+          <button class="btn btn--ghost" type="button" [disabled]="isSyncing()" (click)="runSync('serverToLocal')">
             Server → Local
           </button>
 
-          <button class="btn btn--ghost" type="button" [disabled]="syncing()" (click)="runSync('merge')">
+          <button class="btn btn--ghost" type="button" [disabled]="isSyncing()" (click)="runSync('merge')">
             Merge
           </button>
         </div>
 
-        @if (syncError()) {
-          <div class="sync-error">{{ syncError() }}</div>
+        @if (syncErrorMsg()) {
+          <div class="sync-error">{{ syncErrorMsg() }}</div>
         }
 
-        @if (syncing()) {
+        @if (isSyncing()) {
           <div class="sync-note muted">Syncing…</div>
         }
       </div>
